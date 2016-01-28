@@ -27,6 +27,7 @@
   "dependencies": {
     "body-parser": "1.14.1",
     "express": "4.13.3",
+    "fetch": "1.0.0",
     "ioredis": "1.11.1",
     "load-grunt-tasks": "3.3.0",
     "throng": "1.0.1",
