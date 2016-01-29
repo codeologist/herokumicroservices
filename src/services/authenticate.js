@@ -19,12 +19,10 @@
         return crypto.createHash('sha1').update(str).digest('hex');
     }
 
-    function setToken( sitename, username, salt ){
+    function setToken( token, data, timeout){
         return new Promise( function( resolve, reject ){
 
-            var token = sha1( sitename +":" +username + ":" + salt + ":" + new Date().getTime() );
-
-            new IoRedis( DB ).multi().set(token, username ).expire( token,  sessionTimeout ).exec( function ( err ) {
+            new IoRedis( DB ).multi().set(token, data ).expire( token,  timeout ).exec( function ( err ) {
 
                 if ( err ){
                     reject( err );
@@ -43,8 +41,11 @@
                     reject( new Error( err ));
                 }
 
+                var token = sha1( sitename   +username  + result.salt   + new Date().getTime() );
+
+
                 if ( result.password ===  sha1(password+result.salt) ) {
-                    setToken( sitename, username, result.salt ).then( function( token ){
+                    setToken( token, username, sessionTimeout ).then( function( token ){
                         resolve( token );
                     });
                 } else {
@@ -71,5 +72,6 @@
 
     module.exports = {
         func: authenticate,
+        func2: setToken,
         endpoint: endpoint
     };
