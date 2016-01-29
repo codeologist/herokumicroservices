@@ -1,6 +1,7 @@
 
     "use strict";
 
+    const authorize = require("./services/authorize");
     const authenticate = require("./services/authenticate");
     const register = require("./services/register");
     const server = require("./server");
@@ -17,6 +18,7 @@
 
         app.post("/register", register.endpoint );
         app.post("/authenticate", authenticate.endpoint );
+        app.post("/authorize", authorize.endpoint );
     }
 
     module.exports = Router;
