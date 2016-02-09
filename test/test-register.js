@@ -4,7 +4,9 @@
 
     var assert = require('assert');
     var fetch = require('../src/lib/fetch');
+    var nuke = require('../src/lib/nuke');
 
+    nuke();
     describe('register', function() {
 
         it('should return 201 for a successful registration', function (done) {

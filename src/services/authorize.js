@@ -17,13 +17,16 @@
 
     function authorize( token ){
         return new Promise( function( resolve, reject ){
-            new IoRedis( DB ).get(token, function ( err ) {
+            new IoRedis( DB ).exists(token, function ( err,result ) {
 
-                if ( err ){
+                if ( err || !result ){
                     reject( new Error( err ) );
                 }
 
-                resolve();
+                if ( result ){
+                    resolve();
+                }
+
             });
         });
     }

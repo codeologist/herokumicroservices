@@ -6,7 +6,9 @@
     var fetch = require('../src/lib/fetch');
     var register = require('../src/services/register');
     var authenticate = require('../src/services/authenticate');
+    var nuke = require('../src/lib/nuke');
 
+    nuke();
     describe('authenticate', function() {
 
         it('should return 200 and a token', function (done) {

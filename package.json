@@ -30,6 +30,7 @@
     "fetch": "1.0.0",
     "ioredis": "1.11.1",
     "load-grunt-tasks": "3.3.0",
+    "moment": "2.11.2",
     "throng": "1.0.1",
     "uuid": "2.0.1",
     "winston": "2.1.1"
