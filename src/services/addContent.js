@@ -15,6 +15,18 @@
         db:         0
     };
 
+    function uriExists( uri ){
+        return new Promise( function( resolve, reject ) {
+            new IoRedis(DB).exists( uri, function( err, result ){
+                if ( err || result === 1){
+                    reject();
+                }
+                if ( result === 0){
+                    resolve();
+                }
+            });
+        });
+    }
 
     function func( host, body ){
         return new Promise( function( resolve, reject ){
@@ -23,24 +35,31 @@
                 reject( 400 );
             } else {
                 resolveUsernameFromToken( body.token ).then(function( username ){
-                    var timestamp = new Date().getTime();
-                    var body2 ={};
-                    body2.host = host;
-                    body2.datetime=timestamp;
-                    body2.text = body.text;
-                    var uri = "URI:" + host +":"+ body.uri;
-                    var m = new IoRedis( DB ).multi();
-                    m.lpush( "TIMELINE:" + host + ":" + username, uri  );
-                    m.hmset( uri, body2 );
-                    m.exec( function ( err,result ) {
-                        if ( err || !result ){
-                            reject( new Error( err ) );
-                        }
-                        if (result){
-                            resolve( 200 );
-                        }
-                    });
 
+                    var uri = "URI:" + host +":"+ body.uri;
+
+                    uriExists( uri ).then( function(){
+                        var timestamp = new Date().getTime();
+                        var body2 ={};
+                        body2.host = host;
+                        body2.datetime=timestamp;
+                        body2.text = body.text;
+
+                        var m = new IoRedis( DB ).multi();
+                        m.lpush( "TIMELINE:" + host + ":" + username, uri  );
+                        m.hmset( uri, body2 );
+                        m.exec( function ( err,result ) {
+                            if ( err || !result ){
+                                reject( new Error( err ) );
+                            }
+                            if (result){
+                                resolve( 200 );
+                            }
+                        });
+
+                    }).catch( function(){
+                        reject( 400 );
+                    });
 
                 }).catch( function( err ){
                     reject( 403 );
@@ -57,7 +76,7 @@
             res.status(200).json({});
         }).catch( function( err ){
             winston.profile('ADDCONTENT');
-            winston.warn( err );
+            winston.warn( 'ADDCONTENT:'+ err );
             res.status(400).json({});
         });
     }
