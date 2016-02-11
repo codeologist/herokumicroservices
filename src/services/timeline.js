@@ -20,11 +20,12 @@
         return new Promise( function( resolve, reject ){
             var token = req.body.token;
             var host = req.hostname;
-
             if ( !token ){
                 reject( 400 );
             } else {
+
                 resolveUsernameFromToken(token).then( function (username) {
+
                     var m = new IoRedis( DB );
                     m.lrange( "TIMELINE:" + host + ":" + username, 0, 50, function ( err,result ) {
                         if ( err   ){
@@ -56,6 +57,8 @@
                             });
                         }
                     });
+                }).catch( function( err ){
+                    reject( err );
                 });
             }
         });
@@ -63,10 +66,10 @@
 
     function endpoint( req, res) {
         winston.profile('TIMELINE');
-
         func( req ).then( function( posts ){
             winston.profile('TIMELINE');
             res.status(200).json({ timeline: posts });
+
         }).catch( function( err ){
             winston.profile('TIMELINE');
             winston.warn( err );
