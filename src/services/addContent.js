@@ -42,7 +42,7 @@
                         var timestamp = new Date().getTime();
                         var body2 ={};
                         body2.host = host;
-                        body2.datetime=timestamp;
+                        body2.timestamp=timestamp;
                         body2.text = body.text;
 
                         var m = new IoRedis( DB ).multi();
