@@ -20,11 +20,11 @@
             new IoRedis( DB ).exists(token, function ( err,result ) {
 
                 if ( err || !result ){
-                    reject( new Error( err ) );
+                    reject( token );
                 }
 
                 if ( result ){
-                    resolve();
+                    resolve( token );
                 }
 
             });
@@ -35,12 +35,13 @@
     function endpoint( req, res) {
         winston.profile('AUTHORIZE');
 
-        authorize( req.body.token ).then( function(){
+        authorize( req.body.token ).then( function( token ){
             winston.profile('AUTHORIZE');
+            winston.info("AUTHORIZE SUCCESS for token %s", token );
             res.status(200).json({});
-        }).catch( function( err ){
+        }).catch( function( token ){
             winston.profile('AUTHORIZE');
-            winston.warn( err );
+            winston.info("AUTHORIZE FAIL for token %s", token );
             res.status(403).json( {} );
         });
     }

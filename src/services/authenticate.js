@@ -38,7 +38,7 @@
             new IoRedis( DB ).hgetall( "USER:" + username, function( err, result ) {
 
                 if ( err ){
-                    reject( new Error( err ));
+                    reject( err );
                 }
 
                 var token = sha1( sitename   +username  + result.salt   + new Date().getTime() );
@@ -49,7 +49,7 @@
                         resolve( token );
                     });
                 } else {
-                    reject( new Error( "Authentication Failed" ) );
+                    reject( "password mismatch" );
                 }
 
 
@@ -62,10 +62,11 @@
 
         authenticate( req.hostname, req.body.username, req.body.password ).then( function( token ){
             winston.profile('AUTHENTICATEUSER');
+            winston.info("AUTHENTICATION SUCCESS FOR USER %s@%s with token %s",req.body.username, req.hostname, token );
             res.status(200).json({ token: token });
         }).catch( function( err ){
             winston.profile('AUTHENTICATEUSER');
-            winston.warn("AUTHENTICATION FAIL %s@%s (%s)", req.body.username, req.hostname, err );
+            winston.warn("AUTHENTICATION FAIL for user %s@%s with err [%s]", req.body.username, req.hostname, err );
             res.status(400).json( {} );
         });
     }
