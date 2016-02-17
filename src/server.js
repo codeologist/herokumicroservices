@@ -19,6 +19,9 @@
         app.use( function( req, res, next ){
             winston.info("REQUEST FROM HOST %s %s", req.get("origin"),req.get("host"));
             winston.info( "-----------", JSON.stringify(req.headers) );
+            winston.info( "-----------", 'User-Agent: ' + req.headers['user-agent'] );
+
+
             next();
         });
         var server = app.listen( process.env.PORT, function () {
