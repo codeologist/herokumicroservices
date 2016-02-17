@@ -13,10 +13,11 @@
 
         it('should return a 200', function (done) {
 
-            authenticate.func2("qwerty","data", 60 * 15 ).then( function(){
+            authenticate.persitAuthToken("qwerty","data", 60 * 15 ).then( function(){
 
                 fetch( "http://localhost:5000/authorize", {
-                    'token': 'qwerty'
+                    'token': 'qwerty',
+                    'appname':'testapp',
                 }).then( function( result ){
                     assert.equal( result.statusCode, 200 );
                     done();
@@ -29,10 +30,11 @@
 
         it('should return a 403', function (done) {
 
-            authenticate.func2("qwerty","data", 60 * 15 ).then( function(){
+            authenticate.persitAuthToken("qwerty","data", 60 * 15 ).then( function(){
 
                 fetch( "http://localhost:5000/authorize", {
-                    'token': ''
+                    'token': '',
+                    'appname':'testapp'
                 }).then( function( result ){
                     assert.equal( result.statusCode, 403 );
                     done();

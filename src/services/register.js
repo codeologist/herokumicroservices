@@ -16,7 +16,7 @@
         return crypto.createHash('sha1').update(str).digest('hex');
     }
 
-    function register( sitename, username, password ) {
+    function register( appname, username, password ) {
         return new Promise( function( resolve, reject ){
 
             if ( !username || !password ){
@@ -26,7 +26,7 @@
             var salt = crypto.randomBytes( 256 ).toString();
 
             var userdata = {
-                sitename: sitename,
+                appname: appname,
                 username: username,
                 password:  sha1(password+salt),
                 salt: salt
@@ -46,13 +46,13 @@
 
         winston.profile('REGISTERUSER');
 
-        register( req.get('origin'), req.body.username, req.body.password ).then( function(){
+        register( req.body.appname, req.body.username, req.body.password ).then( function(){
             winston.profile('REGISTERUSER');
             winston.info("REGISTER SUCCESSFUL FOR USER %s@%s", req.body.username, req.body.appname);
             res.status(201).json({});
         }).catch( function( err ){
             winston.profile('REGISTERUSER');
-            winston.warn("REGISTER FAIL %s@%s", req.body.username, req.hostname );
+            winston.warn("REGISTER FAIL %s@%s", req.body.username, req.body.appname );
             res.status(400).json( {} );
         });
     }

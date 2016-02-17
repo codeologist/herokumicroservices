@@ -8,14 +8,15 @@
     var authenticate = require('../src/services/authenticate');
     var nuke = require('../src/lib/nuke');
 
-    nuke();
+
     describe('authenticate', function() {
 
         it('should return 200 and a token', function (done) {
 
-            register.func( "xxx", "john", "doe" ).then( function(){
+            register.func( "appname", "john", "doe" ).then( function(){
 
                 fetch( "http://localhost:5000/authenticate", {
+                    'appname': 'testapp',
                     'username': 'john',
                     'password': 'doe'
                 }).then( function( result ){

@@ -16,7 +16,7 @@
         return new Promise( function( resolve, reject ){
             new IoRedis( DB ).get( token, function ( err, result ) {
 
-                if ( err || result === "" ){console.log("ZXZXZXZXZXZXZXZX")
+                if ( err || result === "" ) {
                     reject( 403 );
                 }
 

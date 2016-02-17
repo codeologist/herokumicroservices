@@ -11,16 +11,17 @@
     var nuke = require('../src/lib/nuke');
 
 
-    describe('authenticate', function() {
+    describe('timeline', function() {
 
         it('should return 1 timeline item', function (done) {
 
             nuke().then( function(){
-                authenticate.func2("QWERTY12345","peter", 60 * 15 ).then( function() {
+                authenticate.persitAuthToken("QWERTY12345","peter", 60 * 15 ).then( function() {
 
                     addContent.func( "localhost", { 'token':'QWERTY12345', 'uri': '/a/b/c', text:'this is some text' }).then( function(){
 
                         fetch( "http://localhost:5000/timeline", {
+                            'appname':'testapp',
                             'token':'QWERTY12345'
                         }).then( function( result ){
                             assert.equal( result.statusCode, 200 );

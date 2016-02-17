@@ -17,7 +17,7 @@
 
     function authorize( token ){
         return new Promise( function( resolve, reject ){
-            new IoRedis( DB ).exists(token, function ( err,result ) {
+            new IoRedis( DB ).exists( token, function ( err,result ) {
 
                 if ( err || !result ){
                     reject( token );
@@ -26,27 +26,36 @@
                 if ( result ){
                     resolve( token );
                 }
-
             });
         });
     }
 
-
-    function endpoint( req, res) {
-        winston.profile('AUTHORIZE');
-
-        authorize( req.body.token ).then( function( token ){
+    function notify( req, res ){
+        return new Promise( function( resolve, reject ){
             winston.profile('AUTHORIZE');
-            winston.info("AUTHORIZE SUCCESS for token %s", token );
-            res.status(200).json({});
-        }).catch( function( token ){
-            winston.profile('AUTHORIZE');
-            winston.info("AUTHORIZE FAIL for token %s", token );
+
+            authorize( req.body.token ).then( function( token ){
+                winston.profile('AUTHORIZE');
+                winston.info("AUTHORIZE SUCCESS for token %s", token );
+                resolve( token );
+            }).catch( function( token ){
+                winston.profile('AUTHORIZE');
+                winston.info("AUTHORIZE FAIL for token %s", token );
+                reject( err );
+            });
+        });
+    }
+
+    function endpoint( req, res, next ) {
+        notify(...arguments).then( function( token ){
+            res.status(200).json({ token: token });
+        }).catch( function(){
             res.status(403).json( {} );
         });
     }
 
     module.exports = {
         func: authorize,
+        func2: notify,
         endpoint: endpoint
     };
