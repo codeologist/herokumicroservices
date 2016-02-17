@@ -16,9 +16,10 @@
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json());
 
-        app.use( function( req, res ){
+        app.use( function( req, res, next ){
             winston.info("REQUEST FROM HOST %s %s", req.get("origin"),req.get("host"));
             winston.info( "-----------", JSON.stringify(req.headers) );
+            next();
         });
         var server = app.listen( process.env.PORT, function () {
             winston.log( "info", "STARTED HEROKU MICROSERVICES ON PORT ", process.env.PORT );
