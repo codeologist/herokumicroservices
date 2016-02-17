@@ -46,9 +46,9 @@
 
         winston.profile('REGISTERUSER');
 
-        register( req.hostname, req.body.username, req.body.password ).then( function(){
+        register( req.get('origin'), req.body.username, req.body.password ).then( function(){
             winston.profile('REGISTERUSER');
-            winston.info("REGISTER SUCCESSFUL");
+            winston.info("REGISTER SUCCESSFUL FOR USER %s@%s", req.body.username, req.body.appname);
             res.status(201).json({});
         }).catch( function( err ){
             winston.profile('REGISTERUSER');
