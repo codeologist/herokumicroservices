@@ -5,7 +5,7 @@
     var http = require('http');
     var url = require("url");
 
-    module.exports = function( endpoint, data, callback ){
+    module.exports = function( endpoint, data, callback, method ){
         return new Promise( function( resolve, reject ){
 
             var parsedUrl = url.parse( endpoint );
@@ -16,7 +16,7 @@
                 host: parsedUrl.hostname,
                 port: parsedUrl.port,
                 path: parsedUrl.pathname,
-                method: 'POST',
+                method: method || 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Content-Length': post_data.length
