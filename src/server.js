@@ -15,17 +15,18 @@
 
         console.log("STARTING HEROKU MICROSERVICES");
 
-        var app = express();
-        app.use(bodyParser.urlencoded({ extended: false }));
-        app.use(bodyParser.json());
-        app.use( function( req, res, next ){
+        function filterByAppname( req, res, next ){
             winston.info("REQUEST FROM APPNAME %s", req.body.appname );
             if ( !req.body.appname ){
                 res.status(400).json({});
             } else {
                 next();
             }
-        });
+        }
+        var app = express();
+        app.use(bodyParser.urlencoded({ extended: false }));
+        app.use(bodyParser.json());
+        app.use( filterByAppname);
 
         app.use( function( req, res, next ){
             if ( req.body.token ){
