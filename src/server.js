@@ -15,6 +15,10 @@
 
         console.log("STARTING HEROKU MICROSERVICES");
 
+        function UNAUTHORIZED403( res ){
+            res.status(403).json({});
+        }
+
         function filterByAppname( req, res, next ){
             winston.info("REQUEST FROM APPNAME %s", req.body.appname );
             if ( !req.body.appname ){
@@ -23,27 +27,32 @@
                 next();
             }
         }
-        var app = express();
-        app.use(bodyParser.urlencoded({ extended: false }));
-        app.use(bodyParser.json());
-        app.use( filterByAppname);
 
-        app.use( function( req, res, next ){
+        function isSafeUrl( url ){
+            return ["/check/username",  "/register","/authenticate"].indexOf( url ) !== -1;
+        }
+
+        function passGo( req, res, next ){
             if ( req.body.token ){
                 authorize.func2(...arguments).then( function(){
                     next();
                 }).catch( function(){
-                    res.status(403).json({});
+                    UNAUTHORIZED403( res )
                 });
             } else {
-                var safeurls = ["/check/username",  "/register","/authenticate"];
-                if  ( safeurls.indexOf( req.url ) !== -1) {
+                if  ( isSafeUrl( req.url )  ) {
                     next();
                 } else {
-                    res.status(403).json({});
+                    UNAUTHORIZED403( res );
                 }
             }
-        });
+        }
+
+        var app = express();
+        app.use(bodyParser.urlencoded({ extended: false }));
+        app.use(bodyParser.json());
+        app.use( filterByAppname );
+        app.use( passGo );
 
         var server = app.listen( process.env.PORT, function () {
             winston.log( "info", "STARTED HEROKU MICROSERVICES ON PORT ", process.env.PORT );
