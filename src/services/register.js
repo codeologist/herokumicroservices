@@ -12,7 +12,7 @@
     *
     *  There is still a lot of duplication in the code which is to be factored out at some
     *  point when there is enough duplication and enough of a pattern of use to warrant it
-    *
+    *  Much of the final boilerplate code will be turned into npm modules
     *
     */
     const winston = require('winston');
@@ -65,7 +65,7 @@
     /*
     *
     *
-    *  The endpoont and notify are to become generic boilerplate
+    *  The endpoint and notify funcs are to become generic boilerplate
     *  used by all microservices
     *
     * */
