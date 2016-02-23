@@ -13,12 +13,11 @@
 
         winston.profile('server');
 
-        winston.info("STARTING HEROKU MICROSERVICES");
+        console.log("STARTING HEROKU MICROSERVICES");
 
         var app = express();
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json());
-
         app.use( function( req, res, next ){
             winston.info("REQUEST FROM APPNAME %s", req.body.appname );
             if ( !req.body.appname ){
@@ -28,15 +27,16 @@
             }
         });
 
-        app.use( function( req, res, next ){console.log( req.url,JSON.stringify(req.body))
-            if ( req.body.token ){console.log("_------->",req.body.token)
+        app.use( function( req, res, next ){
+            if ( req.body.token ){
                 authorize.func2(...arguments).then( function(){
                     next();
                 }).catch( function(){
                     res.status(403).json({});
                 });
             } else {
-                if  ( req.url === "/check/username" || req.url === "/register" ||  req.url === "/authenticate") {
+                var safeurls = ["/check/username",  "/register","/authenticate"];
+                if  ( safeurls.indexOf( req.url ) !== -1) {
                     next();
                 } else {
                     res.status(403).json({});

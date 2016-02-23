@@ -17,24 +17,49 @@
         db:         0
     };
 
+    const actions = {
+        POST:  function( username, data ){
+          return new Promise( function( resolve, reject ) {
+
+              delete data.token;
+              var m = new IoRedis( DB ).multi();
+
+              m.hmset( "PROFILE:"+username, data );
+              m.exec( function ( err,result ) {
+                  if ( err || !result ){
+                      reject( err );
+                  }
+                  if (result){
+                      resolve({});
+                  }
+              });
+          });
+        },
+        GET:function(){
+            return new Promise( function( resolve, reject ) {
+                new IoRedis( DB ).hgetall( "PROFILE:ALICE", function ( err, obj ) {
+
+                    if ( err ){
+                        reject(err);
+                    }
+
+                    if ( obj ){
+                        resolve(obj);
+                    }
+                });
+
+            });
+        }
+    };
+
 
     function profile( req, res  ){
         return new Promise( function( resolve, reject ) {
-
             resolveUsernameFromToken( req.body.token ).then(function( username ){
-
-                username = username.toUpperCase();
-
-                var m = new IoRedis( DB ).multi();
-                delete req.body.token;
-                m.hmset( "PROFILE:"+username, req.body );
-                m.exec( function ( err,result ) {
-                    if ( err || !result ){
-                        reject( err );
-                    }
-                    if (result){
-                        resolve();
-                    }
+                actions[req.method]( username.toUpperCase(), req.body ).then( function( output ){
+                    resolve( output );
+                }).catch( function( err ){
+                   reject( err );
                 });
             });
         });
@@ -44,9 +69,9 @@
         return new Promise( function( resolve, reject ){
             winston.profile('PROFILE');
 
-            profile( req, res ).then( function(){
+            profile( req, res ).then( function( profile ){
                 winston.profile('PROFILE');
-                resolve();
+                resolve( profile );
             }).catch( function( err ){
                 winston.profile('PROFILE');
                 reject( err );
@@ -55,8 +80,10 @@
     }
 
     function endpoint( req, res, next ) {
-        notify(...arguments).then( function( token ){
-            res.status(200).json({});
+        notify(...arguments).then( function( profile ){
+
+
+            res.status(200).json( profile );
         }).catch( function(){
             res.status(403).json( {} );
         });

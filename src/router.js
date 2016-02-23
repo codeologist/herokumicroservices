@@ -10,15 +10,11 @@
     const profile = require("./services/profile");
     const server = require("./server");
 
-    function echoname( req, res ){
-        res.send( req.hostname );
-    }
+
 
     function Router(){
 
         var app = server();
-
-        app.get("/", echoname );
 
         app.post("/register", register.endpoint );
         app.post("/authenticate", authenticate.endpoint );
@@ -27,6 +23,20 @@
         app.post("/add/content", addContent.endpoint );
         app.post("/timeline", timeline.endpoint );
         app.post("/profile", profile.endpoint );
+
+        app.get("/profile", profile.endpoint );
+
+
+        app.use( function( req, res, next ){
+            console.log( "CALLING URL: %s, JSON BODY: %s",req.url,JSON.stringify(req.body));
+            console.log("AUTHORIZATION TOKEN: %s",req.body.token);
+            console.log("----------------------------------------------------------------------");
+            console.log("");
+            console.log("");
+            next();
+        });
+
+
     }
 
     module.exports = Router;

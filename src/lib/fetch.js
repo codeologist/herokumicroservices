@@ -8,6 +8,8 @@
     module.exports = function( endpoint, data, callback, method ){
         return new Promise( function( resolve, reject ){
 
+            data = data || {};
+
             var parsedUrl = url.parse( endpoint );
             var post_data = querystring.stringify( data );
 
