@@ -34,7 +34,7 @@
     /*
     *
     * The main function in each microservice attempts to stick to the
-    * microservice is a very short simple peice of code that doesnt need
+    * microservice is a very short ( 40 odd lines ) simple peice of code that doesnt need
     * a great deal of testing and is only as complex as it needs to be
     */
     function register( appname, username, password ) {
