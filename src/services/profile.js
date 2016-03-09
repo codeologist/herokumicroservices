@@ -3,7 +3,7 @@
 
 
     const resolveUsernameFromToken = require('../lib/resolveUsernameFromToken');
-
+    const qs = require("qs");
     const IoRedis = require("../lib/redis");
     const transformHGETALL = require("../lib/transformHGETALL");
     const crypto = require('crypto');
@@ -18,24 +18,22 @@
     };
 
     const actions = {
-        POST:  function( username, data ){
+        POST:  function( username, body ){
           return new Promise( function( resolve, reject ) {
+              delete body.token;
 
               delete data.token;
               var m = new IoRedis( DB ).multi();
 
-              m.hmset( "PROFILE:"+username, data );
-              m.exec( function ( err,result ) {
-                  if ( err || !result ){
-                      reject( err );
+              new IoRedis( DB ).hmset( "USER:" + username, body.data, function( err ) {
+                  if ( err ){
+                      reject( new Error( err ) )
                   }
-                  if (result){
-                      resolve({});
-                  }
+                  resolve({});
               });
           });
         },
-        GET:function(){
+        GET:function( username, data ){
             return new Promise( function( resolve, reject ) {
                 new IoRedis( DB ).hgetall( "PROFILE:ALICE", function ( err, obj ) {
 
@@ -56,7 +54,7 @@
     function profile( req, res  ){
         return new Promise( function( resolve, reject ) {
             resolveUsernameFromToken( req.body.token ).then(function( username ){
-                actions[req.method]( username.toUpperCase(), req.body ).then( function( output ){
+                actions[req.method]( username ,   qs.parse(req.body) ).then( function( output ){
                     resolve( output );
                 }).catch( function( err ){
                    reject( err );
@@ -68,7 +66,6 @@
     function notify( req, res ){
         return new Promise( function( resolve, reject ){
             winston.profile('PROFILE');
-
             profile( req, res ).then( function( profile ){
                 winston.profile('PROFILE');
                 resolve( profile );
@@ -81,8 +78,6 @@
 
     function endpoint( req, res, next ) {
         notify(...arguments).then( function( profile ){
-
-
             res.status(200).json( profile );
         }).catch( function(){
             res.status(403).json( {} );

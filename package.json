@@ -4,7 +4,8 @@
   "description": "easy microservices on heroku",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"heroku local -p 5001"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "ioredis": "1.11.1",
     "load-grunt-tasks": "3.3.0",
     "moment": "2.11.2",
+    "qs": "6.1.0",
     "throng": "1.0.1",
     "uuid": "2.0.1",
     "winston": "2.1.1"

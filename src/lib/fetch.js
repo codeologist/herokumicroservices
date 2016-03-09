@@ -1,7 +1,7 @@
 
     "use strict";
 
-    var querystring = require('querystring');
+    var querystring = require('qs');
     var http = require('http');
     var url = require("url");
 
