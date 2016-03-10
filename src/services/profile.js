@@ -17,25 +17,36 @@
         db:         0
     };
 
+
     const actions = {
         POST:  function( username, body ){
           return new Promise( function( resolve, reject ) {
               delete body.token;
 
-              delete data.token;
-              var m = new IoRedis( DB ).multi();
-
               new IoRedis( DB ).hmset( "USER:" + username, body.data, function( err ) {
                   if ( err ){
                       reject( new Error( err ) )
                   }
-                  resolve({});
+
+                  new IoRedis( DB ).hgetall("USER:" + username, function ( err, obj ) {
+
+                      if ( err ){
+                          reject(err);
+                      }
+
+                      if ( obj ){
+                          resolve(obj);
+                      }
+                  });
+
+
+
               });
           });
         },
         GET:function( username, data ){
             return new Promise( function( resolve, reject ) {
-                new IoRedis( DB ).hgetall( "PROFILE:ALICE", function ( err, obj ) {
+                new IoRedis( DB ).hgetall("USER:" + username, function ( err, obj ) {
 
                     if ( err ){
                         reject(err);
